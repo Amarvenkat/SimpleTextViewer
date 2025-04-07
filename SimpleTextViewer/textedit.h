@@ -16,6 +16,9 @@ public:
 signals:
     void fileNameChanged(const QString &fileName);
 
+public slots:
+    void highlightText(const QString &searchstring);
+
 private:
     QVariant loadResource(int type, const QUrl &name) override;
     QUrl srcUrl;

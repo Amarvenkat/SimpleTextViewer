@@ -2,6 +2,8 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QTextCursor>
+#include <QTextCharFormat>
 
 TextEdit::TextEdit(QWidget *parent)
     : QTextEdit(parent)
@@ -20,6 +22,7 @@ void TextEdit::setContents(const QString &fileName)
             setHtml(data);
         else
             setPlainText(data);
+        highlightText("callgrind");
     }
     emit fileNameChanged(fileName);
 }
@@ -32,4 +35,40 @@ QVariant TextEdit::loadResource(int type, const QUrl &name)
             return file.readAll();
     }
     return QTextEdit::loadResource(type, name);
+}
+void TextEdit::highlightText(const QString &searchstring)
+{
+
+    if (searchstring.trimmed().isEmpty()){
+        return;
+    }
+    QTextCursor documentcursor(this->document());
+
+
+    QTextCharFormat highlightAlltext;
+    highlightAlltext.setBackground(Qt::yellow);
+
+
+    documentcursor.beginEditBlock();
+
+
+    QTextCursor clear(this->document());
+    QTextCharFormat resetit;
+    resetit.setBackground(Qt::transparent);
+
+    clear.select(QTextCursor::Document);
+    clear.setCharFormat(resetit);
+
+
+    QTextCursor searchcursor(this->document());
+    while (true) {
+        searchcursor = this->document()->find(searchstring, searchcursor);
+        if (searchcursor.isNull()) {
+            break;
+        }
+
+        searchcursor.mergeCharFormat(highlightAlltext);
+    }
+
+    documentcursor.endEditBlock();
 }
