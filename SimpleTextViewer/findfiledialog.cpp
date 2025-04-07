@@ -29,7 +29,8 @@ FindFileDialog::FindFileDialog(TextEdit *editor, Assistant *assistant)
     createLabels();
     createLayout();
 
-    directoryComboBox->addItem(QDir::toNativeSeparators(QDir::currentPath()));
+    QString projectPathforHTMLfile = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../../../../../documents");
+    directoryComboBox->addItem(QDir::toNativeSeparators(projectPathforHTMLfile));
     fileNameComboBox->addItem("*");
     findFiles();
 
