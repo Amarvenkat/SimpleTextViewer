@@ -7,6 +7,8 @@
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
+class QLineEdit;
+class QPushButton;
 QT_END_NAMESPACE
 
 class Assistant;
@@ -44,6 +46,9 @@ private:
     QAction *exitAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
+
+    QLineEdit *searchBar;
+    QPushButton *searchButton;
 };
 
 #endif

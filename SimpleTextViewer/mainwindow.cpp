@@ -6,22 +6,52 @@
 
 #include <QAction>
 #include <QApplication>
-#include <QLibraryInfo>
+#include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QtCore/QLibraryInfo>
 
 using namespace Qt::StringLiterals;
 
-// ![0]
 MainWindow::MainWindow()
     : textViewer(new TextEdit)
     , assistant(new Assistant)
 {
-    // ![0]
     textViewer->setContents(QLibraryInfo::path(QLibraryInfo::ExamplesPath)
                             + "/assistant/simpletextviewer/documentation/intro.html"_L1);
-    setCentralWidget(textViewer);
+
+
+    searchBar = new QLineEdit();
+    searchBar->setPlaceholderText("By default it search for 'callgrind' or simply press the Search button to highlight 'callgrind' ");
+
+    searchButton = new QPushButton(tr("Search"));
+
+
+    connect(searchButton, &QPushButton::clicked, this, [this]() {
+        QString term = searchBar->text().trimmed();
+        if (!term.isEmpty()) {
+            textViewer->highlightText(term);
+        } else {
+            textViewer->highlightText("callgrind");
+        }
+    });
+
+
+    QWidget *centralWidget = new QWidget();
+    QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
+    QHBoxLayout *searchRow = new QHBoxLayout;
+
+    searchRow->addWidget(searchBar);
+    searchRow->addWidget(searchButton);
+
+    mainLayout->addLayout(searchRow);
+    mainLayout->addWidget(textViewer);
+
+    this->setCentralWidget(centralWidget);
 
     createActions();
     createMenus();
@@ -30,16 +60,12 @@ MainWindow::MainWindow()
     resize(750, 400);
 
     connect(textViewer, &TextEdit::fileNameChanged, this, &MainWindow::updateWindowTitle);
-    // ![1]
 }
-//! [1]
 
-//! [2]
 void MainWindow::closeEvent(QCloseEvent *)
 {
     delete assistant;
 }
-//! [2]
 
 void MainWindow::updateWindowTitle(const QString &fileName)
 {
@@ -54,12 +80,10 @@ void MainWindow::about()
                           "own application."));
 }
 
-//! [3]
 void MainWindow::showDocumentation()
 {
     assistant->showDocumentation("index.html");
 }
-//! [3]
 
 void MainWindow::open()
 {
@@ -67,13 +91,11 @@ void MainWindow::open()
     dialog.exec();
 }
 
-//! [4]
 void MainWindow::createActions()
 {
     assistantAct = new QAction(tr("Help Contents"), this);
     assistantAct->setShortcut(QKeySequence::HelpContents);
     connect(assistantAct, &QAction::triggered, this, &MainWindow::showDocumentation);
-    //! [4]
 
     openAct = new QAction(tr("&Open..."), this);
     openAct->setShortcut(QKeySequence::Open);
@@ -92,9 +114,7 @@ void MainWindow::createActions()
 
     aboutQtAct = new QAction(tr("About &Qt"), this);
     connect(aboutQtAct, &QAction::triggered, QApplication::aboutQt);
-    //! [5]
 }
-//! [5]
 
 void MainWindow::createMenus()
 {
