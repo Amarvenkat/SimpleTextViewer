@@ -12,6 +12,8 @@ class TextEdit : public QTextEdit
 public:
     TextEdit(QWidget *parent = nullptr);
     void setContents(const QString &fileName);
+    void highlightCallgrind(const QString &callgrindData);
+
 
 signals:
     void fileNameChanged(const QString &fileName);

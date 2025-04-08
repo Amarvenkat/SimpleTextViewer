@@ -2,13 +2,17 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QTextDocument>
 #include <QTextCursor>
+#include <QRegularExpression>
 #include <QTextCharFormat>
 
+#include "callgrindhighlighter.h"
 TextEdit::TextEdit(QWidget *parent)
     : QTextEdit(parent)
 {
     setReadOnly(true);
+    new CallgrindHighlighter(this->document());
 }
 
 void TextEdit::setContents(const QString &fileName)
@@ -18,6 +22,10 @@ void TextEdit::setContents(const QString &fileName)
     QFile file(fileName);
     if (file.open(QIODevice::ReadOnly)) {
         const QString data(QString::fromUtf8(file.readAll()));
+
+        if (fileName.endsWith(".callgrind")) {
+            highlightCallgrind(data);
+        }
         if (fileName.endsWith(".html"))
             setHtml(data);
         else
@@ -70,4 +78,11 @@ void TextEdit::highlightText(const QString &searchstring)
     }
 
     documentcursor.endEditBlock();
+}
+
+
+void TextEdit::highlightCallgrind(const QString &callgrindData)
+{
+
+    setPlainText(callgrindData);
 }

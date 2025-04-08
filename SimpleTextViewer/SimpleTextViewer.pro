@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     assistant.cpp \
+    callgrindhighlighter.cpp \
     findfiledialog.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
 
 HEADERS += \
     assistant.h \
+    callgrindhighlighter.h \
     findfiledialog.h \
     mainwindow.h \
     textedit.h
