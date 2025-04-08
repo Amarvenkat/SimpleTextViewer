@@ -22,7 +22,6 @@ void TextEdit::setContents(const QString &fileName)
             setHtml(data);
         else
             setPlainText(data);
-        highlightText("callgrind");
     }
     emit fileNameChanged(fileName);
 }

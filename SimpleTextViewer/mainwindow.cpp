@@ -26,7 +26,7 @@ MainWindow::MainWindow()
 
 
     searchBar = new QLineEdit();
-    searchBar->setPlaceholderText("By default it search for 'callgrind' or simply press the Search button to highlight 'callgrind' ");
+    searchBar->setPlaceholderText("Type a text to search");
 
     searchButton = new QPushButton(tr("Search"));
 
@@ -36,7 +36,7 @@ MainWindow::MainWindow()
         if (!term.isEmpty()) {
             textViewer->highlightText(term);
         } else {
-            textViewer->highlightText("callgrind");
+            textViewer->highlightText("");
         }
     });
 
