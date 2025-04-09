@@ -11,8 +11,11 @@
 TextEdit::TextEdit(QWidget *parent)
     : QTextEdit(parent)
 {
-    setReadOnly(true);
-    new CallgrindHighlighter(this->document());
+    //setReadOnly(true);
+    auto *highlighter = new CallgrindHighlighter(this->document());
+    highlighter->finalize();
+
+
 }
 
 void TextEdit::setContents(const QString &fileName)
@@ -85,4 +88,6 @@ void TextEdit::highlightCallgrind(const QString &callgrindData)
 {
 
     setPlainText(callgrindData);
+
+    //new CallgrindHighlighter(this->document());
 }
