@@ -24,8 +24,10 @@ private:
     QMap<QString, int> functionCosts;
     QMap<QString, int> totalcost;
     QString lastFunction;
+
     QMap<int, QTextCharFormat> pendingFunctionFormats;
     QMap<int, QString> lineToFunction;
+
     int maxObservedCost = 1;
     QString parseFunctionName(const QString &text);
     int parseCost(const QString &text);
@@ -36,4 +38,4 @@ private:
     void logFunctionCosts(const QString &text);
 };
 
-#endif
+#endif // CALLGRINDHIGHLIGHTER_H
