@@ -12,8 +12,8 @@ TextEdit::TextEdit(QWidget *parent)
     : QTextEdit(parent)
 {
     //setReadOnly(true);
-   new CallgrindHighlighter(this->document());
-
+  CallgrindHighlighter *highlighter = new CallgrindHighlighter(this->document());
+    //highlighter->finalize();
 
 }
 

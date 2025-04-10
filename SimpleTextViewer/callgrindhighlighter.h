@@ -3,21 +3,37 @@
 
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
-#include <QTextDocument>
+#include <QMap>
 
-class CallgrindHighlighter : public QSyntaxHighlighter {
+class CallgrindHighlighter : public QSyntaxHighlighter
+{
     Q_OBJECT
 
 public:
     explicit CallgrindHighlighter(QTextDocument *parent = nullptr);
+    void finalize(const QString &text);
 
 protected:
     void highlightBlock(const QString &text) override;
 
 private:
-    QTextCharFormat headerlineIndoc;  // Blue bold for header lines
-    QTextCharFormat highCostText;     // Red bold for high-cost fn blocks
-    // QTextCharFormat creatorText;   // (Uncomment if needed)
+    QTextCharFormat headerlineIndoc;
+    QTextCharFormat highCostText;
+
+    QString currentFunction;
+    QMap<QString, int> functionCosts;
+    QMap<QString, int> totalcost;
+    QString lastFunction;
+    QMap<int, QTextCharFormat> pendingFunctionFormats;
+    QMap<int, QString> lineToFunction;
+    int maxObservedCost = 1;
+    QString parseFunctionName(const QString &text);
+    int parseCost(const QString &text);
+    QString parseCalledFunction(const QString &text);
+    int parseCallCount(const QString &text);
+    int parseCallCost(const QString &text);
+
+    void logFunctionCosts(const QString &text);
 };
 
-#endif // CALLGRINDHIGHLIGHTER_H
+#endif
