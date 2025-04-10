@@ -24,11 +24,6 @@ void CallgrindHighlighter::highlightBlock(const QString &text)
     }
     int blockNumber = currentBlock().blockNumber();
 
-
-    /////////////////////////////////////////////////////////////////
-
-
-
     QRegularExpression fnRegex(R"(^\s*fn=(\(\d+\)\s.*$|\w+))");
     QRegularExpressionMatch fnMatch = fnRegex.match(text);
     if (fnMatch.hasMatch()) {
@@ -43,7 +38,7 @@ void CallgrindHighlighter::highlightBlock(const QString &text)
         currentFunction = parseFunctionName(text);
         functionCosts[currentFunction] = 0;
 
-
+        lineToFunction[blockNumber] = currentFunction;
 
 
     }
@@ -63,12 +58,7 @@ void CallgrindHighlighter::highlightBlock(const QString &text)
         setCurrentBlockState(1);
     }
     ///////////////////////////////////////////////////////////////////////////
-    ///
-    ///
-    ///
-    ///
     if (state == 1) {
-
         QRegularExpression costLineRegex(R"(^\s*\d+\s+\d+)");
         QRegularExpressionMatch match = costLineRegex.match(text);
 
@@ -122,11 +112,7 @@ void CallgrindHighlighter::highlightBlock(const QString &text)
 
     // qDebug() << "Function:" << funcname << "Total Cost:" << funcval;
 }
-//////////END OF STATUS 1
-///
-///
-///
-///
+
 QString CallgrindHighlighter::parseFunctionName(const QString &text)
 {
     QRegularExpression fnNameRegex(R"(^\s*fn=(\(\d+\)\s.*$|\w+))");
@@ -147,7 +133,6 @@ int CallgrindHighlighter::parseCost(const QString &text)
     return 0;
 }
 
-/*
 QString CallgrindHighlighter::parseCalledFunction(const QString &text)
 {
     QRegularExpression cfnRegex(R"(^\s*cfn=(\(\d+\)\s.*$|\w+))");
@@ -157,7 +142,7 @@ QString CallgrindHighlighter::parseCalledFunction(const QString &text)
     }
     return QString();
 }
-*/
+
 
 
 
