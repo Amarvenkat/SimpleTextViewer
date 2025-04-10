@@ -1,18 +1,17 @@
-
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTextBrowser>
+#include "textedit.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
-class QMenu;
 class QLineEdit;
 class QPushButton;
 QT_END_NAMESPACE
 
 class Assistant;
-class TextEdit;
 
 class MainWindow : public QMainWindow
 {
@@ -21,34 +20,36 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
 
-private slots:
-    void updateWindowTitle(const QString &fileName);
-    void about();
-    void showDocumentation();
-    void open();
-
 protected:
     void closeEvent(QCloseEvent *event) override;
+
+private slots:
+    void open();
+    void about();
+    void showDocumentation();
+    void updateWindowTitle(const QString &fileName);
+    void updateFunctionCostView(const QMap<QString, int> &costs);
 
 private:
     void createActions();
     void createMenus();
 
-    TextEdit *textViewer;
-    Assistant *assistant;
-
     QMenu *fileMenu;
     QMenu *helpMenu;
-
     QAction *assistantAct;
-    QAction *clearAct;
     QAction *openAct;
+    QAction *clearAct;
     QAction *exitAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
 
+    TextEdit *textViewer;
+    Assistant *assistant;
+
     QLineEdit *searchBar;
     QPushButton *searchButton;
+
+    QTextBrowser *functionCostView;
 };
 
-#endif
+#endif // MAINWINDOW_H

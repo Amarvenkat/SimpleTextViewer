@@ -193,6 +193,7 @@ void TextEdit::computeCost(const QString &callgrindData)
 
 
     highlightFunctionsByCost(functionCost);
+    emit functionCostsComputed(functionCost);
 }
 
 void TextEdit::highlightFunctionsByCost(const QMap<QString, int> &functionCost)
@@ -205,14 +206,9 @@ void TextEdit::highlightFunctionsByCost(const QMap<QString, int> &functionCost)
     int minCost = std::numeric_limits<int>::max();
     int maxCost = std::numeric_limits<int>::min();
 
-    for (auto cost : functionCost.values()) {
-        if (cost < minCost){
-            minCost = cost;
-
-        }
-        if (cost > maxCost) {
-            maxCost = cost;
-        }
+    for (int cost : functionCost.values()) {
+        minCost = qMin(minCost, cost);
+        maxCost = qMax(maxCost, cost);
     }
 
     qDebug() << "Max Function Cost:" << maxCost << ", Min Function Cost:" << minCost;
@@ -227,52 +223,35 @@ void TextEdit::highlightFunctionsByCost(const QMap<QString, int> &functionCost)
 
     QTextCursor clear(this->document());
     QTextCharFormat resetFormat;
+
     resetFormat.setBackground(Qt::transparent);
     clear.select(QTextCursor::Document);
     clear.setCharFormat(resetFormat);
 
+    QRegularExpression regex(R"((^|\n)fn=([^\n]+))");
+    QRegularExpressionMatchIterator matches = regex.globalMatch(this->toPlainText());
 
-    for (auto it = functionCost.begin(); it != functionCost.end(); it++) {
-        QString functionName = it.key();
-        int cost = it.value();
+    while (matches.hasNext()) {
+        QRegularExpressionMatch match = matches.next();
+        QString functionName = match.captured(2);
+        int cost = functionCost.value(functionName, 0); // fallback to 0
 
+        double ratio = (maxCost == minCost) ? 1.0 : static_cast<double>(cost - minCost) / (maxCost - minCost);
 
-        QRegularExpression regex(QStringLiteral(R"((^|\n)fn=%1\b)").arg(QRegularExpression::escape(functionName)));
+        // Compute red gradient background
+        int intensity = static_cast<int>(255.0 * (1.0 - qMin(1.0, ratio))); // light red to dark red
+        QColor gradientColor(255, intensity, intensity);
 
-        QRegularExpressionMatchIterator matchName = regex.globalMatch(this->toPlainText());
+        QTextCharFormat gradientFormat;
+        gradientFormat.setBackground(gradientColor);
+        gradientFormat.setForeground(Qt::black);
+        gradientFormat.setFontWeight(QFont::Bold);
 
-        /////////while match
-        while (matchName.hasNext()) {
-
-            QRegularExpressionMatch match = matchName.next();
-
-            int start = match.capturedStart();
-            int length = match.capturedLength();
-
-
-
-            QTextCursor highlightCursor(this->document());
-
-
-            highlightCursor.setPosition(start);
-            highlightCursor.setPosition(start + length, QTextCursor::KeepAnchor);
-
-
-            int redIntensity = 50 + 205 * (cost - minCost) / qMax(1, maxCost - minCost);
-            QColor color(redIntensity, 0, 0);
-
-
-            QTextCharFormat formatFuncname;
-
-            formatFuncname.setBackground(color);
-            formatFuncname.setForeground(Qt::white);
-            formatFuncname.setFontWeight(QFont::Bold);
-            highlightCursor.setCharFormat(formatFuncname);
-        }
-
-
+        QTextCursor highlightCursor(this->document());
+        highlightCursor.setPosition(match.capturedStart(2));
+        highlightCursor.setPosition(match.capturedEnd(2), QTextCursor::KeepAnchor);
+        highlightCursor.setCharFormat(gradientFormat);
     }
-
 
     cursor.endEditBlock();
 }

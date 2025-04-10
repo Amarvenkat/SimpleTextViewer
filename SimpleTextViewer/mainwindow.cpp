@@ -1,4 +1,3 @@
-
 #include "assistant.h"
 #include "findfiledialog.h"
 #include "mainwindow.h"
@@ -14,22 +13,23 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QtCore/QLibraryInfo>
-
+#include <QSplitter>
 using namespace Qt::StringLiterals;
 
 MainWindow::MainWindow()
     : textViewer(new TextEdit)
     , assistant(new Assistant)
+    , functionCostView(new QTextBrowser)
 {
     textViewer->setContents(QLibraryInfo::path(QLibraryInfo::ExamplesPath)
                             + "/assistant/simpletextviewer/documentation/intro.html"_L1);
 
+    connect(textViewer, &TextEdit::functionCostsComputed, this, &MainWindow::updateFunctionCostView);
 
     searchBar = new QLineEdit();
     searchBar->setPlaceholderText("Type a text to search");
 
     searchButton = new QPushButton(tr("Search"));
-
 
     connect(searchButton, &QPushButton::clicked, this, [this]() {
         QString term = searchBar->text().trimmed();
@@ -40,7 +40,6 @@ MainWindow::MainWindow()
         }
     });
 
-
     QWidget *centralWidget = new QWidget();
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
     QHBoxLayout *searchRow = new QHBoxLayout;
@@ -48,16 +47,28 @@ MainWindow::MainWindow()
     searchRow->addWidget(searchBar);
     searchRow->addWidget(searchButton);
 
-    mainLayout->addLayout(searchRow);
-    mainLayout->addWidget(textViewer);
+    functionCostView->setReadOnly(true);
+    functionCostView->setMinimumHeight(120);
+    functionCostView->setStyleSheet("background: black; color: white;");
 
+
+    mainLayout->addLayout(searchRow);
+
+    QSplitter *splitter = new QSplitter(Qt::Vertical);
+    splitter->addWidget(textViewer);
+    splitter->addWidget(functionCostView);
+    splitter->setStretchFactor(0, 7); // 70%
+    splitter->setStretchFactor(1, 3); // 30%
+    splitter->setSizes({700, 300});   // Optional initial sizes in pixels
+
+    mainLayout->addWidget(splitter);
     this->setCentralWidget(centralWidget);
 
     createActions();
     createMenus();
 
     setWindowTitle(tr("Simple Text Viewer"));
-    resize(750, 400);
+    resize(750, 500);
 
     connect(textViewer, &TextEdit::fileNameChanged, this, &MainWindow::updateWindowTitle);
 }
@@ -132,4 +143,20 @@ void MainWindow::createMenus()
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(helpMenu);
+}
+
+void MainWindow::updateFunctionCostView(const QMap<QString, int> &costs)
+{
+    QStringList lines;
+    QList<QString> keys = costs.keys();
+
+    std::sort(keys.begin(), keys.end(), [&costs](const QString &a, const QString &b) {
+        return costs[a] > costs[b];
+    });
+
+    for (const QString &fn : keys) {
+        lines << QString("%1 : %2").arg(fn).arg(costs[fn]);
+    }
+
+    functionCostView->setPlainText(lines.join("\n"));
 }
