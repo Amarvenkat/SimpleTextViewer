@@ -82,7 +82,8 @@ void CallgrindHighlighter::highlightBlock(const QString &text)
 
             int intensity = static_cast<int>(255.0 * (1.0 - qMin(1.0, functionCosts[currentFunction] / static_cast<double>(maxObservedCost))));
             gradientFormat.setBackground(QColor(255, intensity, intensity));
-
+            gradientFormat.setForeground(Qt::black);
+            gradientFormat.setFontWeight(QFont::Bold);
             setFormat(match.capturedStart(), match.capturedLength(), gradientFormat);
 
         }

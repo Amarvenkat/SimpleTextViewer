@@ -57,9 +57,9 @@ MainWindow::MainWindow()
     QSplitter *splitter = new QSplitter(Qt::Vertical);
     splitter->addWidget(textViewer);
     splitter->addWidget(functionCostView);
-    splitter->setStretchFactor(0, 7); // 70%
-    splitter->setStretchFactor(1, 3); // 30%
-    splitter->setSizes({700, 300});   // Optional initial sizes in pixels
+    splitter->setStretchFactor(0, 7);
+    splitter->setStretchFactor(1, 3);
+    splitter->setSizes({700, 300});
 
     mainLayout->addWidget(splitter);
     this->setCentralWidget(centralWidget);

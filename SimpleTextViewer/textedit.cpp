@@ -234,12 +234,12 @@ void TextEdit::highlightFunctionsByCost(const QMap<QString, int> &functionCost)
     while (matches.hasNext()) {
         QRegularExpressionMatch match = matches.next();
         QString functionName = match.captured(2);
-        int cost = functionCost.value(functionName, 0); // fallback to 0
+        int cost = functionCost.value(functionName, 0);
 
         double ratio = (maxCost == minCost) ? 1.0 : static_cast<double>(cost - minCost) / (maxCost - minCost);
 
-        // Compute red gradient background
-        int intensity = static_cast<int>(255.0 * (1.0 - qMin(1.0, ratio))); // light red to dark red
+
+        int intensity = static_cast<int>(255.0 * (1.0 - qMin(1.0, ratio)));
         QColor gradientColor(255, intensity, intensity);
 
         QTextCharFormat gradientFormat;
